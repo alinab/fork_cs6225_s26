@@ -3,7 +3,8 @@ Lists, Polymorphism
 Ref: Software Foundations Vol.1, Lists.v, Poly.v
 *)
 
-From LECTURES Require Export W2.
+Require Import W2.
+Require Import W1.
 
 Module NatList.
 
@@ -39,7 +40,7 @@ Fixpoint repeat (n count : nat) : natlist :=
   | O => nil
   | S count' => n :: (repeat n count')
   end.
-  
+
 (** The [length] function calculates the length of a list. *)
 
 Fixpoint length (l:natlist) : nat :=
@@ -47,7 +48,7 @@ Fixpoint length (l:natlist) : nat :=
   | nil => O
   | h :: t => S (length t)
   end.
-  
+
 Definition hd (default : nat) (l : natlist) : nat :=
   match l with
   | nil => default
@@ -101,7 +102,7 @@ Proof.
     reflexivity.
   - (* l = cons n l' *)
     reflexivity.  Qed.
-    
+
 Theorem app_assoc : forall l1 l2 l3 : natlist,
   (l1 ++ l2) ++ l3 = l1 ++ (l2 ++ l3).
 Proof.
@@ -162,7 +163,7 @@ End NatList.
 -Instead of defining separate types for list of bools, list of days,
 list of bins, list of lists, etc., we can define a generic list type
  *)
- 
+
 Inductive list (X:Type) : Type :=
 | nil
 | cons (x : X) (l : list X).
@@ -186,7 +187,7 @@ Fixpoint repeat (X: Type) (n : X) (count : nat) : list X :=
   | S count' => cons X n (repeat X n count')
   end.
 
-  
+
 Compute (repeat nat 2 4).
 
 Compute (repeat bool true 2).
@@ -221,7 +222,7 @@ Fixpoint repeat' X x count :=
   | 0 => nil X
   | S count' => cons X x (repeat' X x count')
   end.
-  
+
 Check repeat'.
 
 (** We can make the type arguments to constructors
@@ -241,9 +242,9 @@ Fixpoint repeat'' {X : Type} x count : list X :=
   | 0        => nil
   | S count' => cons x (repeat'' x count')
   end.
-  
+
 Compute (repeat 2 4).
-  
+
 Fixpoint app {X : Type} (l1 l2 : list X) : list X :=
   match l1 with
   | nil      => l2
@@ -263,7 +264,7 @@ Fixpoint rev {X : Type} (l : list X) : list X :=
   | cons h t => app (rev t) (cons h nil)
   end.
 
-Fail Definition mynil := nil. 
+Fail Definition mynil := nil.
 
 
 Notation "x :: y" := (cons x y)
@@ -272,7 +273,7 @@ Notation "[ ]" := nil.
 Notation "[ x ; .. ; y ]" := (cons x .. (cons y []) ..).
 Notation "x ++ y" := (app x y)
                      (at level 60, right associativity).
-                     
+
 Inductive prod (X Y: Type) :=
 | pair (x : X) (y : Y).
 
@@ -397,10 +398,10 @@ Definition empty : map_struct := fun s => 0.
 Definition update (m:map_struct) (s:string) (x:nat) : map_struct :=
   fun s' => if (String.eqb s s') then x else m s'.
 
-Definition example : map_struct := 
+Definition example : map_struct :=
   update (update empty "x" 1) "y" 2.
 
-Inductive aexp := 
+Inductive aexp :=
 | ANum (n:nat)
 | APlus (a1 a2: aexp)
 | AMult (a1 a2: aexp)
