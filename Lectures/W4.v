@@ -13,12 +13,13 @@ Some more basic tactics in Rocq
 
 From LECTURES Require Export W3.
 
-(** Some more basic tactics in Rocq *)
 
 (** The apply tactic
 - Can be used if the goal exactly matches an hypothesis.
-- Can also be used if the goal matches the consequent of an implication
-  (i.e., something of the form [A -> B]). In this case, the goal will be replaced by the antecedent [A].
+- Can also be used if the goal matches the consequent of 
+  an implication (i.e., something of the form [A -> B]).
+  In this case, the goal will be replaced by the antecedent
+  [A].
 *)
 
 Theorem silly1 : forall (n m : nat),
@@ -42,7 +43,8 @@ Proof.
   intros n m eq1 eq2. apply eq2. apply eq1. Qed.
 
 (** The symmetry tactic
-- Can be used to switch the left hand side and right hand side in the goal *)
+- Can be used to switch the left hand side and right hand
+  side of an equality proposition in the goal *)
 
 Theorem silly3 : forall (n m : nat),
   n = m ->
@@ -52,8 +54,9 @@ Proof.
 
 
 (** The apply_with tactic
-- An extension of [apply] that allows us to specify how to instantiate variables in the applied
-  theorem or hypothesis. *)
+- An extension of [apply] that allows us to specify how to 
+  instantiate variables in the applied theorem or hypothesis.
+ *)
 
 Theorem trans_eq : forall (X:Type) (x y z : X),
   x = y -> y = z -> x = z.
@@ -65,7 +68,8 @@ Example trans_eq_example' : forall (a b c d e f : nat),
      [c;d] = [e;f] ->
      [a;b] = [e;f].
 Proof.
-  intros a b c d e f eq1 eq2. apply trans_eq with (y := [c;d]). apply eq1. apply eq2. Qed.
+  intros a b c d e f eq1 eq2. 
+  apply trans_eq with (y := [c;d]). apply eq1. apply eq2. Qed.
 
 (**
 Injectivity of constructors
@@ -86,25 +90,30 @@ Theorem S_injective' : forall (n m : nat),
 Proof.
   intros n m H. injection H as Hnm. apply Hnm. Qed.
 
-(** Injection H as ... generates all equations that can be derived using the injectivity of constructors in H *)
+(** Injection H as ... generates all equations that
+  can be derived using the injectivity of constructors in H *)
 
 Theorem injection_ex1 : forall (n m o : nat),
   [n;m] = [o;o] ->
   n = m.
 Proof.
-  intros n m o H. injection H as H1 H2. rewrite H1. rewrite H2. reflexivity. Qed.
+  intros n m o H. injection H as H1 H2. 
+  rewrite H1. rewrite H2. reflexivity. Qed.
 
-Example injection_ex3 : forall (X : Type) (x y z : X) (l j : list X),
+Example injection_ex3 : forall (X : Type) (x y z : X) 
+(l j : list X),
   x :: y :: l = z :: j ->
   j = z :: l ->
   x = y.
 Proof.
-  intros X x y z l j H1 H2.
-  injection H1 as Hx Hj. rewrite H2 in Hj. injection Hj as Hy.
-  rewrite Hx. rewrite Hy. reflexivity. Qed.
+  intros X x y z l j H1.
+  injection H1 as Hx Hj. rewrite Hx. rewrite <- Hj.
+  intros H2. injection H2 as Hy. symmetry. apply Hy.
+Qed.
 
 (** f_equal tactic
-- Used to prove goals of the form [f x = f y] by reducing them to [x = y]. *)
+- Used to prove goals of the form [f x = f y] by 
+  reducing them to [x = y]. *)
 
  
 Theorem func_app : forall (X Y: Type) (f: X -> Y) (x1 x2: X),
@@ -115,8 +124,11 @@ Proof.
   (* intros X Y f x1 x2 H. f_equal. apply H. Qed. *)
 
 (** Discriminate tactic
-- Used to prove goals that are contradictions, by noticing that two sides of an equation
-  were constructed by different constructors. In this case, we can use the discriminate tactic to immediately prove any goal *)
+- Used to prove goals that are contradictions, by noticing 
+  that two sides of an equation were constructed by 
+  different constructors. 
+  In this case, we can use the discriminate tactic to 
+  immediately prove any goal *)
 
 Theorem discriminate_ex1 : forall (n m : nat),
   false = true ->
@@ -140,18 +152,22 @@ Proof.
 Qed.
 
 (** The apply in tactic
-- Used to apply a theorem or hypothesis in the context of another hypothesis.
-- Forward reasoning : given [X -> Y] and a hypothesis matching [X], it produces a hypothesis matching [Y]. *)
+- Used to apply a theorem or hypothesis in the context of 
+  another hypothesis.
+- Forward reasoning : given [X -> Y] and a hypothesis 
+  matching [X], it produces a hypothesis matching [Y]. *)
 
 Theorem silly4 : forall (n m p q : nat),
   (n = m -> p = q) ->
   m = n ->
   q = p.
 Proof.
-  intros n m p q H1 H2. symmetry in H2. apply H1 in H2. symmetry in H2. apply H2. Qed.
+  intros n m p q H1 H2. symmetry in H2. apply H1 in H2. 
+  symmetry in H2. apply H2. Qed.
 
 (** The specialize tactic
-- Used to instantiate a universally quantified variable in a hypothesis with a specific value.
+- Used to instantiate a universally quantified variable 
+  in a hypothesis with a specific value.
 *)
 
 Theorem specialize_example: forall n,
@@ -165,7 +181,8 @@ Proof.
 
 
 (** The generalize dependent tactic
-- Used to move a variable from the context back into the goal, re-adding a universal quantifier.
+- Used to move a variable from the context back into the goal,
+  re-adding a universal quantifier.
 *)
  
 Fixpoint double (n:nat) :=
@@ -197,7 +214,8 @@ Proof.
     + simpl in H. discriminate H.
   - intros m H. destruct m as [| m']. 
     + simpl in H. discriminate H.
-    + f_equal. apply IHn'. simpl in H. injection H as H1. apply H1. Qed.
+    + f_equal. apply IHn'. simpl in H. 
+      injection H as H1. apply H1. Qed.
 
 Theorem eqb_true : forall n m,
   n =? m = true -> n = m.
@@ -213,13 +231,15 @@ Proof.
 Theorem double_injective' : forall n m,
   double n = double m ->
   n = m.
-Proof. intros n m. generalize dependent n. induction m as [| m' IHm']. 
+Proof. intros n m. generalize dependent n. 
+  induction m as [| m' IHm']. 
 - intros n H. destruct n as [| n']. 
   + reflexivity. 
   + simpl in H. discriminate H. 
 - intros n H. destruct n as [| n']. 
   + simpl in H. discriminate H. 
-  + f_equal. apply IHm'. simpl in H. injection H as H1. apply H1. Qed.
+  + f_equal. apply IHm'. simpl in H. 
+    injection H as H1. apply H1. Qed.
 
 Fixpoint minus (n m : nat) : nat :=
   match n, m with
@@ -231,17 +251,19 @@ Fixpoint minus (n m : nat) : nat :=
 Theorem add_0_r : forall n:nat, n + 0 = n.
 Proof.
   intros n. induction n as [| n' IHn'].
-  - (* n = 0 *)    reflexivity.
-  - (* n = S n' *) simpl. rewrite -> IHn'. reflexivity.  Qed.
+  - reflexivity.
+  - simpl. rewrite -> IHn'. reflexivity.  Qed.
 
-  Lemma sub_add_leb : forall n m, leb n m = true -> (m - n) + n = m.
-  Proof. intros n. induction n as [| n' IHn'].
-    - intros m H. destruct m as [| m'].
-      + reflexivity.
-      + simpl. rewrite add_0_r. reflexivity.
-    - intros m H. destruct m as [| m'].
-      + simpl in H. discriminate H.
-      + simpl. rewrite <- plus_n_Sm. simpl in H. apply IHn' in H. rewrite H. reflexivity. Qed.
+Lemma sub_add_leb : forall n m, leb n m = true -> 
+  (m - n) + n = m.
+Proof. intros n. induction n as [| n' IHn'].
+  - intros m H. destruct m as [| m'].
+    + reflexivity.
+    + simpl. rewrite add_0. reflexivity.
+  - intros m H. destruct m as [| m'].
+    + simpl in H. discriminate H.
+    + simpl. rewrite <- plus_n_Sm. simpl in H. 
+    apply IHn' in H. rewrite H. reflexivity. Qed.
 
 (** The unfold tactic
 - Used to replace a defined term with its body.
@@ -249,7 +271,8 @@ Proof.
 
 Definition double_plus n := n + n.
 
-Lemma square_mult : forall n m, double_plus (n + m) = double_plus n + double_plus m.
+Lemma square_mult : forall n m, double_plus (n + m) 
+ = double_plus n + double_plus m.
 Proof.
   intros n m.
   simpl. unfold double_plus. rewrite add_assoc. 
