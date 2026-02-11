@@ -1,3 +1,10 @@
+(**
+Propositions in Rocq
+
+Ref. Software Foundations, Volume 1, Logic.v
+*)
+
+
 From LECTURES Require Export W4a.
 
 (** The Prop Type in Rocq
@@ -229,6 +236,66 @@ Inductive ev : nat -> Prop :=
 Theorem ev_4 : ev 4.
 Proof. apply ev_SS. apply ev_SS. apply ev_0. Qed.
 
+Theorem ev_double : forall n, ev (double n).
+Proof. intros n. induction n as [| n' IHn']. 
+- simpl. apply ev_0.
+- simpl. 
+
+Lemma ev_inversion : forall (n : nat),
+    ev n ->
+    (n = 0) \/ (exists n', n = S (S n') /\ ev n').
+Proof. intros n H. destruct H as [| m Hm].
+- left. reflexivity.
+- right. exists m. split.
+  -- reflexivity.
+  -- apply Hm.
+Qed.
+
+Theorem evSS_ev : forall n, ev (S (S n)) -> ev n.
+Proof. intros n H. apply ev_inversion in H. destruct H as [H1 | H2].
+- discriminate.
+- destruct H2 as [n' [H21 H22]]. injection H21 as H21'. 
+  rewrite H21'. apply H22.
+Qed.
+
+Theorem evSS_ev' : forall n,
+  ev (S (S n)) -> ev n.
+Proof.
+  intros n E.  inversion E as [| n' E' Hnn']. apply E'. Qed.
+  
+Theorem one_not_even : ~ ev 1.
+Proof. unfold not. intros H. apply ev_inversion in H. destruct H as [H1 | H2].
+- discriminate.
+- destruct H2 as [n' [H21 H22]]. discriminate H21.
+Qed.
+
+Theorem one_not_even' : ~ ev 1.
+Proof. unfold not. intros H. inversion H. Qed.
+
+(** The inversion tactic performs a destruct on an inductive proposition
+and automatically applies tactics such as discriminate and injection
+to discharge as many goals as possible. *)
+
+Theorem SSSSev__even : forall n,
+  ev (S (S (S (S n)))) -> ev n.
+Proof. intros n H. inversion H as [| n' E' Hnn']. 
+ inversion E' as [| n'' E'' Hnn'']. apply E''. Qed.
+ 
+Theorem ev5_nonsense :
+  ev 5 -> 2 + 2 = 9.
+Proof. intros H. inversion H as [| n' E' H5n']. inversion E' as [| n'' E'' H3n''].
+inversion E''. Qed.
+
+Theorem inversion_ex1 : forall (n m o : nat),
+  [n; m] = [o; o] -> [n] = [m].
+Proof. intros. inversion H.
+Qed.
+
+Theorem inversion_ex2 : forall (n m o p: nat),
+  [n; m] = [o; p] -> [n] = [o].
+Proof. intros. injection H as H1 H2. f_equal. apply H1. Qed. 
+
+
 Theorem Even_ev_equiv : forall (n:nat), Even n <-> ev n.
 Proof. split.
 - intros H. unfold Even in H. destruct H as [x Hx]. generalize dependent n. induction x as [| x' IHx'].
@@ -238,6 +305,14 @@ Proof. split.
   -- unfold Even. exists 0. reflexivity.
   -- unfold Even in IHn'. destruct IHn' as [n IHn']. unfold Even.
      exists (S n). simpl. rewrite IHn'. reflexivity.
+Qed.
+
+Inductive le : nat -> nat -> Prop :=
+| le_0 (n:nat) : le n n
+| le_S (n m : nat) (H: le n m) : le n (S m).
+
+Theorem le_3_5 : le 3 5.
+Proof. apply le_S. apply le_S. apply le_0.
 Qed.
 
 

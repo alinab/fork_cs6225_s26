@@ -9,6 +9,8 @@ Some more basic tactics in Rocq
 - specialize
 - generalize dependent
 - unfold
+
+Ref.: Software Foundations, Volume 1, Tactics.v
 *)
 
 From LECTURES Require Export W3.
@@ -135,6 +137,9 @@ Theorem discriminate_ex1 : forall (n m : nat),
   n = m.
 Proof.
   intros n m contra. discriminate contra. Qed.
+
+(** Also known as principle of explosion: from a false hypothesis, 
+anything can be inferred. *)
 
 Theorem discriminate_ex2 : forall (n : nat),
   S n = O ->
@@ -263,7 +268,10 @@ Proof. intros n. induction n as [| n' IHn'].
   - intros m H. destruct m as [| m'].
     + simpl in H. discriminate H.
     + simpl. rewrite <- plus_n_Sm. simpl in H. 
-    apply IHn' in H. rewrite H. reflexivity. Qed.
+    rewrite IHn'.
+      ++ reflexivity.
+      ++ apply H. 
+Qed.
 
 (** The unfold tactic
 - Used to replace a defined term with its body.
